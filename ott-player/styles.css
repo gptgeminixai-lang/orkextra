@@ -208,7 +208,8 @@ select:focus-visible {
   overflow: hidden;
   isolation: isolate;
   background:
-    radial-gradient(1100px 760px at 88% -12%, rgba(255, 77, 94, .22), transparent 58%),
+    radial-gradient(760px 520px at 50% 34%, rgba(255, 77, 94, .16), transparent 62%),
+    radial-gradient(1100px 760px at 88% -12%, rgba(255, 77, 94, .20), transparent 58%),
     radial-gradient(820px 620px at 4% 116%, rgba(255, 77, 94, .12), transparent 55%),
     linear-gradient(155deg, #0b0b10 0%, #0e0f15 46%, #080809 100%);
 }
@@ -257,13 +258,11 @@ select:focus-visible {
 }
 
 .account-gate-main {
-  width: min(1240px, calc(100vw - 52px));
+  width: min(452px, calc(100vw - 32px));
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(340px, 430px);
-  align-items: center;
-  gap: clamp(42px, 8vw, 110px);
-  padding: 32px 0 56px;
+  place-items: center;
+  padding: 12px 0 48px;
 }
 
 .account-intro {
@@ -339,9 +338,23 @@ select:focus-visible {
   font-size: .78rem;
 }
 
+.account-gate-head--end {
+  justify-content: flex-end;
+}
+
+.auth-card-mark {
+  display: block;
+  height: 30px;
+  width: auto;
+  margin: 2px auto 18px;
+  object-fit: contain;
+}
+
 .auth-card {
   position: relative;
-  padding: 30px 28px;
+  width: 100%;
+  padding: 34px 30px 32px;
+  text-align: center;
   border: 1px solid rgba(255, 255, 255, .1);
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(24, 25, 32, .72), rgba(14, 15, 20, .82));
@@ -411,6 +424,7 @@ select:focus-visible {
   display: grid;
   gap: 7px;
   margin-top: 14px;
+  text-align: left;
   color: #aab4c4;
   font-size: .8rem;
   font-weight: 850;
