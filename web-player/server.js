@@ -1250,16 +1250,36 @@ async function proxyStream(url, req, res) {
   const controller = new AbortController();
   res.on("close", () => { controller.abort(); release(); });
 
-  let response;
-  try {
-    response = await safeFetch(target, {
-      headers: upstreamHeaders(req),
-      signal: controller.signal
-    });
-  } catch (error) {
+  // Open the upstream with a few retries. IPTV portals routinely refuse a rapid
+  // reconnect (connection cooldown / single-use play_token) with a transient
+  // 5xx or a dropped socket; surfacing that as a hard 502 makes the player give
+  // up. Retrying before any bytes are sent is safe — no portal slot is held yet.
+  let response = null;
+  let lastError = null;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (controller.signal.aborted || res.destroyed) { release(); return; }
+    try {
+      response = await safeFetch(target, {
+        headers: upstreamHeaders(req),
+        signal: controller.signal
+      });
+      if (response.status >= 500 && attempt < 2) {
+        lastError = new Error(`Upstream HTTP ${response.status}`);
+        response = null;
+        await sleep(500 * (attempt + 1));
+        continue;
+      }
+      break;
+    } catch (error) {
+      lastError = error;
+      if (controller.signal.aborted || res.destroyed) { release(); return; }
+      if (attempt < 2) { await sleep(500 * (attempt + 1)); continue; }
+    }
+  }
+  if (!response) {
     release();
     if (res.destroyed || controller.signal.aborted) return;
-    return sendJson(res, { error: `Stream proxy failed: ${friendlyPortalError(error)}` }, Number(error?.statusCode) || 502);
+    return sendJson(res, { error: `Stream proxy failed: ${friendlyPortalError(lastError)}` }, Number(lastError?.statusCode) || 502);
   }
 
   const contentType = response.headers.get("content-type") || "";

@@ -3408,9 +3408,20 @@
     return {
       enableWorker: true,
       enableStashBuffer: true,
-      stashInitialSize: 384 * 1024,
+      // Larger stash rides out the jitter of relaying a live stream through the
+      // proxy on a constrained host, so brief network hiccups don't underrun.
+      stashInitialSize: 1024 * 1024,
       liveBufferLatencyChasing: false,
-      lazyLoad: false
+      lazyLoad: false,
+      // Trim the SourceBuffer as playback advances. Without this a long live
+      // session keeps appending until MSE throws a SourceBuffer/quota error,
+      // which puts the media element into an unrecoverable error state.
+      autoCleanupSourceBuffer: true,
+      autoCleanupMaxBackwardDuration: 60,
+      autoCleanupMinBackwardDuration: 30,
+      // Portals often 302 a stream to a CDN; reuse the resolved URL on internal
+      // retries instead of re-resolving (which can re-trigger token rejection).
+      reuseRedirectedURL: true
     };
   }
 
