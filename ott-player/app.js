@@ -1036,12 +1036,12 @@
     const authenticated = Boolean(account.authenticated);
     const slotLimit = account.profileSlots?.limit || account.entitlements?.maxProfiles || 1;
     const slotUsed = account.profileSlots?.used || 0;
-    els.accountPlanLabel.textContent = pro ? "Pro" : (authenticated ? "Free" : "Demo");
+    els.accountPlanLabel.textContent = pro ? "Pro" : (authenticated ? "Free" : "Guest");
     els.accountBtn.classList.toggle("is-pro", pro);
     els.accountMenuKicker.textContent = pro ? "ORKXTRA Pro" : "ORKXTRA account";
-    els.accountMenuName.textContent = account.user?.name || "Demo access";
+    els.accountMenuName.textContent = account.user?.name || "Guest";
     els.accountMenuEmail.textContent = account.user?.email || "Sign up to save IPTV profiles";
-    els.accountMenuPlan.textContent = pro ? "Pro plan" : (authenticated ? "Free plan" : "Demo mode");
+    els.accountMenuPlan.textContent = pro ? "Pro plan" : (authenticated ? "Free plan" : "Browsing as guest");
     els.accountMenuSlots.textContent = authenticated
       ? `${slotUsed} of ${slotLimit} saved ${slotLimit === 1 ? "profile" : "profiles"}`
       : "One demo profile";
