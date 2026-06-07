@@ -5,7 +5,7 @@ backend. Run it exactly like the original:
 
 ```powershell
 node web-player/server.js --port=4173
-# then open http://127.0.0.1:4173/ott-player/
+# then open http://127.0.0.1:4173/browse/
 ```
 
 No `npm install` needed (Node 22 built-ins only). All changes are in `web-player/server.js`,

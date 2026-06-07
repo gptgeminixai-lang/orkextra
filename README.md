@@ -19,8 +19,9 @@ node web-player/server.js --port=4173
 
 Then open: **http://127.0.0.1:4173/**
 
-It opens in **Demo mode** — pick a profile, or add your own IPTV login
-(MAC portal, Xtream, or M3U) to load your channels.
+It opens to the **profile picker**. Add your own IPTV login
+(MAC portal, Xtream, or M3U) to load your channels. Log in for a Pro account
+to save multiple profiles.
 
 **To stop it:** double-click **`stop.bat`** (macOS/Linux: `./stop.sh`), or just press
 `Ctrl+C` in the server window. The stop script only ends the ORKXTRA server, not other apps.
@@ -40,7 +41,7 @@ cp .env.example .env        # Windows:  copy .env.example .env
 
 ## What's inside
 ```
-ott-player/      the ORKXTRA app — the UI you publish        ->  served at /ott-player/
+ott-player/      the ORKXTRA app — the UI you publish        ->  served at /browse/
 web-player/
   server.js      one file: serves everything, proxies portals, handles accounts
   vendor/        playback libraries (hls.js / mpegts.js)
@@ -48,7 +49,7 @@ web-player/
 start.bat / .sh  convenience launchers
 ```
 
-Opening `/` redirects to `/ott-player/`. A SQLite DB and an image cache are created
+Opening `/` redirects to `/browse/` (the legacy `/ott-player/` path also redirects there). A SQLite DB and an image cache are created
 automatically under `web-player/data/` on first run (gitignored).
 
 ## Notes

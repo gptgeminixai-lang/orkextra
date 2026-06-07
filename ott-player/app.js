@@ -161,57 +161,18 @@
     tmodalEpList: $("#tmodalEpList")
   };
 
-  const demoChannels = [
-    {
-      id: "demo-live-news",
-      profileId: DEMO_ID,
-      title: "ORKXTRA News",
-      type: "live",
-      group: "News",
-      url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-      quality: "HD",
-      language: "English"
-    },
-    {
-      id: "demo-live-sports",
-      profileId: DEMO_ID,
-      title: "Matchday Arena",
-      type: "live",
-      group: "Sports",
-      url: "https://test-streams.mux.dev/test_001/stream.m3u8",
-      quality: "FHD",
-      language: "English"
-    },
-    {
-      id: "demo-movie-bbb",
-      profileId: DEMO_ID,
-      title: "Flower Showcase",
-      type: "movie",
-      group: "Movies",
-      url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-      quality: "HD",
-      language: "English"
-    },
-    {
-      id: "demo-series-sintel",
-      profileId: DEMO_ID,
-      title: "Sintel",
-      type: "series",
-      group: "Series",
-      url: "https://media.w3.org/2010/05/sintel/trailer.mp4",
-      quality: "HD",
-      language: "English"
-    }
-  ];
+  // No bundled demo content — the catalog comes entirely from the user's own
+  // saved IPTV profiles (loaded from IndexedDB when a profile is selected).
+  const demoChannels = [];
 
   const state = normalizeState(loadState());
   state.aspect = state.aspect || "contain";
   state.resume = (state.resume && typeof state.resume === "object") ? state.resume : {};
   state.lockAdult = Boolean(state.lockAdult);
   state.parentalPin = state.parentalPin || "";
-  let channels = [...demoChannels];
-  let channelById = new Map(channels.map((channel) => [channel.id, channel]));
-  let loadedProfileIds = new Set([DEMO_ID]);
+  let channels = [];
+  let channelById = new Map();
+  let loadedProfileIds = new Set();
   let activeRoute = "home";
   let activeGroup = "All";
   let loginType = "mac";
@@ -251,7 +212,7 @@
   let upgradeAfterAuth = false;
   let authMode = "login";
   let blockedProfileIds = new Set();
-  let profileGateVisible = state.currentProfileId === DEMO_ID;
+  let profileGateVisible = false;
   let playerVisible = false;
   let manageProfiles = false;
   let editingProfileId = "";
@@ -305,6 +266,10 @@
     updatePlayerChrome();
     detectHealth();
     await refreshAccount({ quiet: true });
+    // With no bundled demo profile, present the profile picker on boot whenever
+    // the visitor is past the login gate, so they choose a profile (which loads
+    // its catalog). Returning sessions with a saved selection still see it here.
+    if (!accountGateVisible) profileGateVisible = true;
     render();
     document.body.classList.remove("is-booting");
     await hydrateChannels();
@@ -335,14 +300,8 @@
 
   function normalizeState(input) {
     const base = {
-      profiles: [{
-        id: DEMO_ID,
-        name: "Demo",
-        type: "demo",
-        createdAt: Date.now(),
-        lastSync: Date.now()
-      }],
-      currentProfileId: DEMO_ID,
+      profiles: [],
+      currentProfileId: "",
       favorites: [],
       history: [],
       currentChannelId: "",
@@ -351,9 +310,10 @@
       playbackRate: STABLE_LIVE_RATE
     };
     const merged = { ...base, ...input };
-    if (!Array.isArray(merged.profiles) || !merged.profiles.length) merged.profiles = base.profiles;
-    if (!merged.profiles.some((profile) => profile.id === DEMO_ID)) merged.profiles.unshift(base.profiles[0]);
-    if (!merged.profiles.some((profile) => profile.id === merged.currentProfileId)) merged.currentProfileId = merged.profiles[0].id;
+    if (!Array.isArray(merged.profiles)) merged.profiles = [];
+    // Drop any legacy "Demo" profile persisted by older builds.
+    merged.profiles = merged.profiles.filter((profile) => profile && profile.id !== DEMO_ID && profile.type !== "demo");
+    if (!merged.profiles.some((profile) => profile.id === merged.currentProfileId)) merged.currentProfileId = merged.profiles[0]?.id || "";
     if (!Array.isArray(merged.favorites)) merged.favorites = [];
     if (!Array.isArray(merged.history)) merged.history = [];
     merged.playbackRate = Number(merged.playbackRate) || STABLE_LIVE_RATE;
@@ -422,8 +382,8 @@
   }
 
   async function hydrateChannels() {
-    setChannels([...demoChannels]);
-    loadedProfileIds = new Set([DEMO_ID]);
+    setChannels([]);
+    loadedProfileIds = new Set();
   }
 
   async function loadProfileChannels(profileId, options = {}) {
@@ -1226,8 +1186,8 @@
     els.saveProfileBtn.textContent = "Add Profile";
     setLoginType("mac");
     els.profileName.value = "";
-    els.macPortal.value = "http://me.mdmfista.com:80/c/";
-    els.macValue.value = "A0:BB:3E:DC:5E:99";
+    els.macPortal.value = "";
+    els.macValue.value = "";
     els.m3uUrl.value = "";
     els.xtreamServer.value = "";
     els.xtreamUser.value = "";
@@ -3980,14 +3940,13 @@
   }
 
   function currentProfileId() {
-    return currentProfile()?.id || DEMO_ID;
+    return currentProfile()?.id || "";
   }
 
   function availableProfiles() {
     const real = state.profiles.filter((profile) => profile.id !== DEMO_ID);
     if (!account.authenticated && real.length) return real.slice(0, 1);
-    const allowed = real.filter((profile) => !blockedProfileIds.has(profile.id));
-    return allowed.length ? allowed : state.profiles.filter((profile) => profile.id === DEMO_ID);
+    return real.filter((profile) => !blockedProfileIds.has(profile.id));
   }
 
   function savedProfileCount() {

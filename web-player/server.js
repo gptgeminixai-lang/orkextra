@@ -260,16 +260,29 @@ process.on("unhandledRejection", (reason) => console.error("[unhandledRejection]
 process.on("uncaughtException", (error) => console.error("[uncaughtException]", error?.message || error));
 
 server.listen(port, host, () => {
-  console.log(`ORKXTRA OTT Player: http://${host}:${port}/ott-player/`);
+  console.log(`ORKXTRA OTT Player: http://${host}:${port}/browse/`);
 });
 
 async function serveStatic(url, res) {
   let pathname = decodeURIComponent(url.pathname);
   if (pathname === "/") {
-    res.writeHead(302, { Location: "/ott-player/" });
+    res.writeHead(302, { Location: "/browse/" });
     res.end();
     return;
   }
+  // The app's public URL is /browse. Redirect the legacy /ott-player path to it.
+  if (pathname === "/ott-player" || pathname.startsWith("/ott-player/")) {
+    res.writeHead(301, { Location: pathname.replace(/^\/ott-player/, "/browse") });
+    res.end();
+    return;
+  }
+  if (pathname === "/browse") {
+    res.writeHead(302, { Location: "/browse/" });
+    res.end();
+    return;
+  }
+  // /browse is served from the ott-player/ directory on disk.
+  if (pathname.startsWith("/browse/")) pathname = "/ott-player" + pathname.slice("/browse".length);
   if (pathname.endsWith("/")) pathname += "index.html";
   const relative = pathname.replace(/^\/+/, "");
   const fullPath = path.resolve(root, relative);
@@ -336,10 +349,14 @@ function openAccountDatabase(filename) {
   return db;
 }
 
-function bootstrapAdminAccount(db) {
-  const email = normalizeEmail(process.env.ORKXTRA_ADMIN_EMAIL || "admin@gmail.com");
-  const password = String(process.env.ORKXTRA_ADMIN_PASSWORD || "admin@gmail.com");
-  const name = String(process.env.ORKXTRA_ADMIN_NAME || "ORKXTRA Admin").trim();
+// Create (if missing) a user and grant it an always-active Pro subscription.
+// Idempotent — safe to run on every startup. Used to seed built-in Pro logins
+// (the deploy DB is ephemeral, so seeding in code keeps them across redeploys).
+function seedProAccount(db, rawEmail, rawPassword, rawName) {
+  const email = normalizeEmail(rawEmail);
+  const password = String(rawPassword || "");
+  const name = String(rawName || "ORKXTRA").trim() || "ORKXTRA";
+  if (!email || !password) return;
   let user = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
   if (!user) {
     const id = crypto.randomUUID();
@@ -364,14 +381,26 @@ function bootstrapAdminAccount(db) {
       updated_at = excluded.updated_at
   `).run(
     user.id,
-    "local-admin-pro",
+    "local-seed-pro",
     user.stripe_customer_id || "",
-    "local-admin-pro",
+    "local-seed-pro",
     "active",
     Math.floor(Date.now() / 1000) + 10 * 365 * 24 * 60 * 60,
     0,
     Date.now()
   );
+}
+
+function bootstrapAdminAccount(db) {
+  // Admin login (overridable via ORKXTRA_ADMIN_* env vars).
+  seedProAccount(
+    db,
+    process.env.ORKXTRA_ADMIN_EMAIL || "admin@gmail.com",
+    process.env.ORKXTRA_ADMIN_PASSWORD || "admin@gmail.com",
+    process.env.ORKXTRA_ADMIN_NAME || "ORKXTRA Admin"
+  );
+  // Built-in Pro account.
+  seedProAccount(db, "anand@gmail.com", "anand@gmail.com", "Anand");
 }
 
 async function accountSignup(req, res) {
@@ -496,8 +525,8 @@ async function createStripeCheckout(req, res) {
     mode: "subscription",
     "line_items[0][price]": STRIPE_PRICE_ID,
     "line_items[0][quantity]": "1",
-    success_url: `${origin}/ott-player/?billing=success`,
-    cancel_url: `${origin}/ott-player/?billing=cancelled`,
+    success_url: `${origin}/browse/?billing=success`,
+    cancel_url: `${origin}/browse/?billing=cancelled`,
     client_reference_id: user.id,
     allow_promotion_codes: "true",
     "metadata[user_id]": user.id,
@@ -519,7 +548,7 @@ async function createStripePortal(req, res) {
     method: "POST",
     fields: {
       customer: user.stripe_customer_id,
-      return_url: `${requestOrigin(req)}/ott-player/`
+      return_url: `${requestOrigin(req)}/browse/`
     }
   });
   return sendJson(res, { url: session.url });
