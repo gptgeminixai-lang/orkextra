@@ -21,14 +21,19 @@ services:
       - key: ALLOW_PRIVATE_REMOTE
         value: "0"
 
-      # ---- Set these AFTER the first deploy, in the Render dashboard ----
-      # APP_URL  -> your live URL, e.g. https://orkxtra.onrender.com
-      #
-      # Stripe (optional, only for "Upgrade to Pro"). Add the SECRET values in the
-      # Render dashboard (Environment tab) so they never live in this committed file:
-      # - key: STRIPE_PRICE_ID
-      #   value: price_xxx
-      # - key: STRIPE_SECRET_KEY
-      #   sync: false
-      # - key: STRIPE_WEBHOOK_SECRET
-      #   sync: false
+      # Public site origin — used to build Stripe return URLs.
+      - key: APP_URL
+        value: "https://orkxtra.onrender.com"
+
+      # ---- Stripe ("Upgrade to Pro" checkout) ----
+      # The price id is a PUBLIC identifier (safe to commit).
+      - key: STRIPE_PRICE_ID
+        value: "price_1TdaS6KYrqeWcIx3rHDolixn"
+      # SECRETS — never committed. sync:false makes Render prompt for them in the
+      # dashboard (Environment tab). Paste the values there yourself:
+      #   STRIPE_SECRET_KEY      -> sk_test_... or sk_live_...
+      #   STRIPE_WEBHOOK_SECRET  -> whsec_... (from the webhook you create in Stripe)
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
