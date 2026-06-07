@@ -201,15 +201,27 @@ select:focus-visible {
 }
 
 .account-gate {
+  position: relative;
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
+  isolation: isolate;
   background:
-    linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px),
-    linear-gradient(135deg, #04070c 0%, #07101b 52%, #08090d 100%);
-  background-size: 54px 54px, 54px 54px, auto;
+    radial-gradient(1100px 760px at 88% -12%, rgba(255, 77, 94, .22), transparent 58%),
+    radial-gradient(820px 620px at 4% 116%, rgba(255, 77, 94, .12), transparent 55%),
+    linear-gradient(155deg, #0b0b10 0%, #0e0f15 46%, #080809 100%);
+}
+
+/* Soft cinematic vignette + faint film grain to lift the dark background. */
+.account-gate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 120% at 50% 0%, transparent 55%, rgba(0, 0, 0, .55) 100%);
 }
 
 .account-gate-head,
@@ -261,23 +273,27 @@ select:focus-visible {
 .account-kicker,
 .auth-eyebrow {
   margin: 0;
-  color: #8fd4ff;
+  color: #ff5e6c;
   font-size: .74rem;
   font-weight: 950;
-  letter-spacing: .12em;
+  letter-spacing: .18em;
   text-transform: uppercase;
 }
 
 .account-intro h1 {
-  margin: 14px 0 18px;
+  margin: 16px 0 20px;
   color: #f7f9ff;
-  font-size: clamp(3.2rem, 6vw, 6rem);
-  line-height: .94;
-  letter-spacing: 0;
+  font-size: clamp(3.1rem, 5.6vw, 5.6rem);
+  line-height: .96;
+  letter-spacing: -.02em;
 }
 
 .account-intro h1 span {
-  color: #8fd4ff;
+  background: linear-gradient(100deg, #ff5e6c 0%, #ff8a72 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #ff5e6c;
 }
 
 .account-copy {
@@ -298,16 +314,24 @@ select:focus-visible {
 .account-value-grid div {
   min-width: 0;
   display: grid;
-  gap: 5px;
-  padding: 15px;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, .05);
+  gap: 6px;
+  padding: 16px 16px 17px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .02));
+  backdrop-filter: blur(6px);
+  transition: border-color .2s ease, transform .2s ease;
+}
+
+.account-value-grid div:hover {
+  border-color: rgba(255, 94, 108, .35);
+  transform: translateY(-2px);
 }
 
 .account-value-grid strong {
   color: #fff;
   font-size: 1.05rem;
+  font-weight: 850;
 }
 
 .account-value-grid span {
@@ -316,16 +340,34 @@ select:focus-visible {
 }
 
 .auth-card {
-  padding: 26px;
-  border: 1px solid rgba(255, 255, 255, .13);
-  border-radius: 18px;
-  background: rgba(11, 17, 26, .94);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, .52);
+  position: relative;
+  padding: 30px 28px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(24, 25, 32, .72), rgba(14, 15, 20, .82));
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  box-shadow:
+    0 40px 110px rgba(0, 0, 0, .6),
+    0 0 0 1px rgba(255, 255, 255, .03) inset,
+    0 1px 0 rgba(255, 255, 255, .08) inset;
+}
+
+/* Faint red glow hugging the top edge of the card. */
+.auth-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px -1px auto -1px;
+  height: 120px;
+  border-radius: 22px 22px 0 0;
+  background: radial-gradient(120% 100% at 50% 0%, rgba(255, 77, 94, .22), transparent 70%);
+  pointer-events: none;
 }
 
 .auth-card h2 {
-  margin: 8px 0 6px;
+  margin: 10px 0 6px;
   font-size: 2rem;
+  letter-spacing: -.01em;
 }
 
 .auth-card > p:not(.auth-eyebrow) {
@@ -338,55 +380,85 @@ select:focus-visible {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
-  margin: 21px 0 16px;
-  padding: 4px;
+  margin: 22px 0 18px;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, .07);
   border-radius: 999px;
-  background: rgba(255, 255, 255, .07);
+  background: rgba(255, 255, 255, .045);
 }
 
 .auth-tabs button {
-  min-height: 38px;
+  min-height: 40px;
   border-radius: 999px;
   background: transparent;
   color: #a9b6c8;
-  font-weight: 900;
+  font-weight: 850;
+  letter-spacing: .01em;
+  transition: color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.auth-tabs button:hover {
+  color: #eef2f8;
 }
 
 .auth-tabs button.is-active {
-  background: #fff;
-  color: #07101b;
+  background: linear-gradient(135deg, #ff4d5e, #ff6a5b);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(255, 77, 94, .35);
 }
 
 .auth-card label {
   display: grid;
-  gap: 6px;
-  margin-top: 12px;
-  color: #b6c1d1;
-  font-size: .84rem;
+  gap: 7px;
+  margin-top: 14px;
+  color: #aab4c4;
+  font-size: .8rem;
   font-weight: 850;
+  letter-spacing: .02em;
 }
 
 .auth-card input {
-  min-height: 48px;
-  background: rgba(255, 255, 255, .075);
+  min-height: 50px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .04);
+  color: #f2f5fa;
+  font-size: .98rem;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.auth-card input::placeholder {
+  color: #66707f;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: rgba(255, 94, 108, .65);
+  background: rgba(255, 255, 255, .06);
+  box-shadow: 0 0 0 4px rgba(255, 77, 94, .16);
 }
 
 .auth-submit,
 .pro-checkout {
   width: 100%;
-  min-height: 50px;
-  margin-top: 18px;
-  border-radius: 10px;
-  background: #fff;
-  color: #07101b;
-  font-weight: 950;
-  transition: transform .18s ease, background .18s ease;
+  min-height: 52px;
+  margin-top: 22px;
+  border: 0;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #ff4d5e 0%, #ff6a5b 100%);
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: .01em;
+  box-shadow: 0 12px 30px rgba(255, 77, 94, .32);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
 }
 
 .auth-submit:hover,
 .pro-checkout:hover {
-  background: #b9e8ff;
-  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow: 0 16px 40px rgba(255, 77, 94, .45);
+  transform: translateY(-2px);
 }
 
 .auth-submit:disabled,
