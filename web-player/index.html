@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SFVIP Web Player</title>
+  <link rel="icon" href="../SFVipPlayer.ico">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <aside class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <img src="../SFVipPlayer.ico" alt="">
+        <div>
+          <strong>SFVIP</strong>
+          <span>Web Player</span>
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <button class="nav-item is-active" data-view="live" title="Live TV"><span>TV</span><b>Live</b></button>
+        <button class="nav-item" data-view="library" title="Library"><span>LB</span><b>Library</b></button>
+        <button class="nav-item" data-view="guide" title="Program Guide"><span>EP</span><b>Guide</b></button>
+        <button class="nav-item" data-view="smart" title="Smart Playlists"><span>SP</span><b>Smart</b></button>
+        <button class="nav-item" data-view="recordings" title="Recordings"><span>RC</span><b>Record</b></button>
+        <button class="nav-item" data-view="subtitles" title="Subtitles"><span>CC</span><b>Subs</b></button>
+        <button class="nav-item" data-view="settings" title="Settings"><span>ST</span><b>Settings</b></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div id="clock" class="clock">00:00</div>
+        <div id="connectionBadge" class="status-pill">Demo ready</div>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div class="top-brand">
+          <img src="../SFVipPlayer.ico" alt="">
+          <div>
+            <strong>SFVIP Stream</strong>
+            <span>Live · Movies · Series</span>
+          </div>
+        </div>
+        <label class="search-box">
+          <span>Search</span>
+          <input id="globalSearch" type="search" autocomplete="off" placeholder="Search titles, channels, groups">
+        </label>
+        <div class="status-cluster">
+          <span id="sourceHealth" class="status-pill">Source OK</span>
+          <span id="syncStatus" class="status-pill">Sync ready</span>
+        </div>
+        <div class="profile-controls">
+          <label>Profile
+            <select id="profileSelect"></select>
+          </label>
+          <button id="continueBtn" class="ghost-btn">Continue</button>
+          <button id="refreshProfileBtn" class="ghost-btn">Refresh</button>
+          <button id="deleteProfileBtn" class="ghost-btn">Remove</button>
+          <button id="addAccountBtn" class="primary-btn">Add Profile</button>
+        </div>
+      </header>
+
+      <section class="player-layout">
+        <div class="video-shell">
+          <video id="player" crossorigin="anonymous" playsinline preload="metadata" poster=""></video>
+          <div id="playerEmpty" class="player-empty">
+            <div class="signal-mark"></div>
+            <strong>Select a stream</strong>
+            <span>SFVIP Web Player</span>
+          </div>
+          <div class="player-gradient"></div>
+          <div id="playerStatus" class="player-status" aria-live="polite">Ready</div>
+          <div class="player-topline">
+            <div>
+              <small id="nowType">Ready</small>
+              <strong id="nowTitle">No stream selected</strong>
+            </div>
+            <div id="nowQuality" class="quality-pill">HD</div>
+          </div>
+          <div class="player-controls" aria-label="Player controls">
+            <div class="control-row primary-controls">
+              <button id="prevBtn" class="icon-btn" title="Previous channel" aria-label="Previous channel">Prev</button>
+              <button id="playPauseBtn" class="icon-btn is-large" title="Play or pause" aria-label="Play">Play</button>
+              <button id="nextBtn" class="icon-btn" title="Next channel" aria-label="Next channel">Next</button>
+              <div class="time-display" aria-live="off">
+                <span id="currentTimeLabel">0:00</span>
+                <span id="durationLabel">LIVE</span>
+              </div>
+            </div>
+            <div class="seek-control">
+              <div class="seek-track" aria-hidden="true">
+                <div id="bufferBar" class="buffer-bar"></div>
+              </div>
+              <input id="seekRange" class="seek-range" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek">
+            </div>
+            <div class="control-row secondary-controls">
+              <button id="muteBtn" class="icon-btn" title="Mute" aria-label="Mute">Mute</button>
+              <input id="volumeRange" class="range" type="range" min="0" max="1" step="0.01" value="0.75" aria-label="Volume" title="Volume">
+              <label class="speed-control">
+                <span class="sr-only">Playback speed</span>
+                <select id="speedSelect" aria-label="Playback speed">
+                  <option value="0.75">0.75x</option>
+                  <option value="1">1x</option>
+                  <option value="1.25">1.25x</option>
+                  <option value="1.5">1.5x</option>
+                  <option value="2">2x</option>
+                </select>
+              </label>
+              <button id="playerSubtitleBtn" class="icon-btn" title="Subtitles" aria-label="Subtitles">CC</button>
+              <button id="pipBtn" class="icon-btn" title="Picture in picture" aria-label="Picture in picture">PiP</button>
+              <button id="fullscreenBtn" class="icon-btn" title="Fullscreen" aria-label="Fullscreen">Full</button>
+            </div>
+            <button id="recordNowBtn" class="danger-btn">Record</button>
+          </div>
+        </div>
+
+        <aside class="now-panel">
+          <div class="panel-header">
+            <div>
+              <small>Now Playing</small>
+              <h2 id="detailTitle">SFVIP Web Player</h2>
+            </div>
+            <button id="favoriteBtn" class="icon-btn" title="Favorite">Star</button>
+          </div>
+          <dl class="metadata-grid">
+            <div><dt>Group</dt><dd id="detailGroup">Demo</dd></div>
+            <div><dt>EPG</dt><dd id="detailProgram">No program</dd></div>
+            <div><dt>Rating</dt><dd id="detailRating">0.0</dd></div>
+            <div><dt>History</dt><dd id="detailHistory">New</dd></div>
+          </dl>
+          <div class="quick-actions">
+            <button id="hideChannelBtn" class="ghost-btn">Hide</button>
+            <button id="lockChannelBtn" class="ghost-btn">Lock</button>
+            <button id="scheduleBtn" class="ghost-btn">Schedule</button>
+            <button id="subtitleBtn" class="ghost-btn">Subtitle</button>
+          </div>
+          <div class="mini-section">
+            <div class="mini-title">Up Next</div>
+            <div id="upNextList" class="compact-list"></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="content-area">
+        <div id="view-live" class="view is-active">
+          <div class="section-head">
+            <div>
+              <small id="profileSummary">Channels</small>
+              <h1 id="catalogTitle">Live TV</h1>
+            </div>
+            <div id="typeRail" class="segmented type-rail" role="tablist" aria-label="Media type"></div>
+          </div>
+          <section id="streamingHome" class="streaming-home" aria-label="Featured content">
+            <div id="heroFeature" class="hero-feature"></div>
+            <div id="contentRows" class="content-rows"></div>
+          </section>
+          <div class="browse-shell">
+            <aside class="group-panel">
+              <div class="mini-title">Browse By</div>
+              <div id="taxonomyRail" class="taxonomy-rail" role="tablist" aria-label="Browse channel taxonomy"></div>
+              <div class="mini-title">Groups</div>
+              <div id="groupRail" class="chip-rail"></div>
+            </aside>
+            <section class="channel-panel">
+              <div class="channel-panel-head">
+                <div>
+                  <strong id="activeGroupTitle">All channels</strong>
+                  <span id="activeGroupMeta">Ready</span>
+                </div>
+                <div id="catalogLoadStatus" class="catalog-load-status is-hidden" aria-live="polite"></div>
+              </div>
+              <div id="channelGrid" class="channel-grid"></div>
+            </section>
+          </div>
+        </div>
+
+        <div id="view-library" class="view">
+          <div class="section-head">
+            <div>
+              <small>Accounts and media</small>
+              <h1>Library</h1>
+            </div>
+            <button id="refreshAllBtn" class="ghost-btn">Refresh</button>
+          </div>
+          <div class="library-grid">
+            <section class="surface-panel">
+              <div class="panel-header">
+                <h2>Accounts</h2>
+                <button id="addAccountInlineBtn" class="icon-btn" title="Add account">Add</button>
+              </div>
+              <div id="accountsList" class="stack-list"></div>
+            </section>
+            <section class="surface-panel">
+              <div class="panel-header">
+                <h2>Favorites</h2>
+                <span id="favoriteCount" class="status-pill">0</span>
+              </div>
+              <div id="favoritesList" class="stack-list"></div>
+            </section>
+            <section class="surface-panel">
+              <div class="panel-header">
+                <h2>History</h2>
+                <button id="clearHistoryBtn" class="ghost-btn">Clear</button>
+              </div>
+              <div id="historyList" class="stack-list"></div>
+            </section>
+          </div>
+        </div>
+
+        <div id="view-guide" class="view">
+          <div class="section-head">
+            <div>
+              <small>Electronic Program Guide</small>
+              <h1>Guide</h1>
+            </div>
+            <div class="guide-actions">
+              <input id="guideDate" type="date">
+              <button id="todayGuideBtn" class="ghost-btn">Today</button>
+            </div>
+          </div>
+          <div id="guideGrid" class="guide-grid"></div>
+        </div>
+
+        <div id="view-smart" class="view">
+          <div class="section-head">
+            <div>
+              <small>Smart filters</small>
+              <h1>Playlists</h1>
+            </div>
+            <button id="newSmartBtn" class="primary-btn">New Playlist</button>
+          </div>
+          <div id="smartGrid" class="smart-grid"></div>
+        </div>
+
+        <div id="view-recordings" class="view">
+          <div class="section-head">
+            <div>
+              <small>Scheduler</small>
+              <h1>Recordings</h1>
+            </div>
+            <button id="newScheduleBtn" class="primary-btn">New Schedule</button>
+          </div>
+          <div class="library-grid two-columns">
+            <section class="surface-panel">
+              <div class="panel-header"><h2>Scheduled</h2><span id="scheduleCount" class="status-pill">0</span></div>
+              <div id="scheduleList" class="stack-list"></div>
+            </section>
+            <section class="surface-panel">
+              <div class="panel-header"><h2>Captured</h2><span id="recordingCount" class="status-pill">0</span></div>
+              <div id="recordingList" class="stack-list"></div>
+            </section>
+          </div>
+        </div>
+
+        <div id="view-subtitles" class="view">
+          <div class="section-head">
+            <div>
+              <small>Subtitle library</small>
+              <h1>Subtitles</h1>
+            </div>
+            <div class="top-actions">
+              <button id="uploadSubtitleBtn" class="ghost-btn">Upload</button>
+              <button id="addSubtitleUrlBtn" class="primary-btn">Add URL</button>
+            </div>
+          </div>
+          <div id="subtitleList" class="stack-list wide-list"></div>
+        </div>
+
+        <div id="view-settings" class="view">
+          <div class="section-head">
+            <div>
+              <small>Player preferences</small>
+              <h1>Settings</h1>
+            </div>
+            <button id="resetSettingsBtn" class="danger-btn">Reset</button>
+          </div>
+          <div class="settings-grid">
+            <section class="surface-panel">
+              <h2>Interface</h2>
+              <label>Theme
+                <select id="themeSelect">
+                  <option value="midnight">Midnight</option>
+                  <option value="studio">Studio</option>
+                  <option value="daylight">Daylight</option>
+                </select>
+              </label>
+              <label>Accent
+                <select id="accentSelect">
+                  <option value="teal">Teal</option>
+                  <option value="coral">Coral</option>
+                  <option value="amber">Amber</option>
+                </select>
+              </label>
+              <label>UI Scale
+                <input id="uiScaleRange" type="range" min="0.9" max="1.15" step="0.01">
+              </label>
+            </section>
+            <section class="surface-panel">
+              <h2>Video</h2>
+              <label>Fit
+                <select id="videoFitSelect">
+                  <option value="contain">Contain</option>
+                  <option value="cover">Cover</option>
+                  <option value="fill">Fill</option>
+                </select>
+              </label>
+              <label>Brightness
+                <input id="brightnessRange" type="range" min="70" max="130" step="1">
+              </label>
+              <label>Contrast
+                <input id="contrastRange" type="range" min="70" max="140" step="1">
+              </label>
+              <label>Saturation
+                <input id="saturationRange" type="range" min="50" max="160" step="1">
+              </label>
+            </section>
+            <section class="surface-panel">
+              <h2>Audio</h2>
+              <label>Output
+                <select id="audioOutputSelect"></select>
+              </label>
+              <label>Equalizer
+                <select id="equalizerSelect">
+                  <option value="flat">Flat</option>
+                  <option value="cinema">Cinema</option>
+                  <option value="voice">Voice</option>
+                  <option value="music">Music</option>
+                </select>
+              </label>
+              <div class="eq-grid">
+                <label>60 <input data-eq="60" type="range" min="-12" max="12" step="1"></label>
+                <label>250 <input data-eq="250" type="range" min="-12" max="12" step="1"></label>
+                <label>1K <input data-eq="1000" type="range" min="-12" max="12" step="1"></label>
+                <label>4K <input data-eq="4000" type="range" min="-12" max="12" step="1"></label>
+                <label>12K <input data-eq="12000" type="range" min="-12" max="12" step="1"></label>
+              </div>
+            </section>
+            <section class="surface-panel">
+              <h2>Parental Control</h2>
+              <label class="toggle-row"><input id="parentalEnabled" type="checkbox"> Enabled</label>
+              <label>PIN
+                <input id="pinInput" type="password" maxlength="12" autocomplete="new-password">
+              </label>
+              <button id="savePinBtn" class="ghost-btn">Save PIN</button>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="accountDialog" class="modal account-modal">
+    <form method="dialog" id="accountForm">
+      <div class="modal-head">
+        <div><small>Profile credentials</small><h2>Add Profile</h2></div>
+        <button class="icon-btn" value="cancel" formnovalidate>Close</button>
+      </div>
+      <div class="segmented account-tabs">
+        <button type="button" class="is-active" data-account-type="m3u">M3U</button>
+        <button type="button" data-account-type="xtream">Xtream</button>
+        <button type="button" data-account-type="mac">MAC</button>
+      </div>
+      <label class="account-name-row">Name <input id="accountName" placeholder="My IPTV"></label>
+      <div class="account-fields" data-fields="m3u">
+        <label>M3U URL <input id="m3uUrl" type="url" placeholder="https://example.com/list.m3u"></label>
+        <button id="m3uFileBtn" class="ghost-btn" type="button">Choose M3U File</button>
+      </div>
+      <div class="account-fields is-hidden" data-fields="xtream">
+        <label>Server <input id="xtreamServer" type="url" placeholder="https://provider.example.com"></label>
+        <label>Username <input id="xtreamUser" autocomplete="username"></label>
+        <label>Password <input id="xtreamPass" type="password" autocomplete="current-password"></label>
+      </div>
+      <div class="account-fields is-hidden" data-fields="mac">
+        <label>URL <input id="macPortal" type="url" placeholder="http://IP:PORT/c/"></label>
+        <label>MAC <input id="macValue" placeholder="00:1A:79:XX:XX:XX"></label>
+      </div>
+      <div id="accountBusy" class="inline-busy is-hidden" aria-live="polite"></div>
+      <menu class="modal-actions">
+        <button class="ghost-btn" value="cancel" formnovalidate>Cancel</button>
+        <button id="saveAccountBtn" class="primary-btn" value="default">Add Profile</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="smartDialog" class="modal">
+    <form method="dialog" id="smartForm">
+      <div class="modal-head">
+        <div><small>Smart rules</small><h2>Playlist</h2></div>
+        <button class="icon-btn" value="cancel" formnovalidate>Close</button>
+      </div>
+      <label>Name <input id="smartName" required></label>
+      <label>Contains <input id="smartQuery" placeholder="news, sport, 4k"></label>
+      <label>Group <input id="smartGroup" placeholder="Entertainment"></label>
+      <label>Type
+        <select id="smartType">
+          <option value="all">All</option>
+          <option value="live">Live</option>
+          <option value="movie">Movies</option>
+          <option value="series">Series</option>
+          <option value="music">Music</option>
+        </select>
+      </label>
+      <label>Minimum rating <input id="smartRating" type="range" min="0" max="5" step="0.1"></label>
+      <label class="toggle-row"><input id="smartOnlyHd" type="checkbox"> HD only</label>
+      <label class="toggle-row"><input id="smartFavorites" type="checkbox"> Favorites only</label>
+      <menu class="modal-actions">
+        <button class="ghost-btn" value="cancel" formnovalidate>Cancel</button>
+        <button class="primary-btn" value="default">Save</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="scheduleDialog" class="modal">
+    <form method="dialog" id="scheduleForm">
+      <div class="modal-head">
+        <div><small>Recording schedule</small><h2>Schedule</h2></div>
+        <button class="icon-btn" value="cancel" formnovalidate>Close</button>
+      </div>
+      <label>Channel <select id="scheduleChannel"></select></label>
+      <label>Start <input id="scheduleStart" type="datetime-local" required></label>
+      <label>End <input id="scheduleEnd" type="datetime-local" required></label>
+      <label>Action
+        <select id="scheduleAction">
+          <option value="notify">Notify</option>
+          <option value="play">Tune and notify</option>
+          <option value="record">Record current stream</option>
+        </select>
+      </label>
+      <menu class="modal-actions">
+        <button class="ghost-btn" value="cancel" formnovalidate>Cancel</button>
+        <button class="primary-btn" value="default">Save</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="pinDialog" class="modal is-small">
+    <form method="dialog" id="pinForm">
+      <div class="modal-head">
+        <div><small>Locked content</small><h2>Enter PIN</h2></div>
+        <button class="icon-btn" value="cancel" formnovalidate>Close</button>
+      </div>
+      <label>PIN <input id="unlockPin" type="password" autofocus></label>
+      <menu class="modal-actions">
+        <button class="ghost-btn" value="cancel" formnovalidate>Cancel</button>
+        <button class="primary-btn" value="default">Unlock</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="subtitleDialog" class="modal">
+    <form method="dialog" id="subtitleForm">
+      <div class="modal-head">
+        <div><small>Subtitle source</small><h2>Add Subtitle</h2></div>
+        <button class="icon-btn" value="cancel" formnovalidate>Close</button>
+      </div>
+      <label>Name <input id="subtitleName" required></label>
+      <label>Language <input id="subtitleLang" value="English"></label>
+      <label>URL <input id="subtitleUrl" type="url" placeholder="https://example.com/subtitles.vtt"></label>
+      <menu class="modal-actions">
+        <button class="ghost-btn" value="cancel" formnovalidate>Cancel</button>
+        <button class="primary-btn" value="default">Save</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <input id="m3uFileInput" type="file" accept=".m3u,.m3u8,text/plain" hidden>
+  <input id="epgFileInput" type="file" accept=".xml,.xmltv,text/xml" hidden>
+  <input id="mediaFileInput" type="file" accept="video/*,audio/*,.m3u8,.mkv,.mp4,.mp3,.aac,.webm" hidden>
+  <input id="subtitleFileInput" type="file" accept=".srt,.vtt,text/plain" hidden>
+
+  <div id="chatBot" class="chat-bot">
+    <button id="chatToggleBtn" class="chat-toggle" type="button" aria-expanded="false" aria-controls="chatPanel">AI</button>
+    <section id="chatPanel" class="chat-panel is-hidden" aria-label="AI assistant">
+      <div class="chat-head">
+        <div>
+          <small>Capy AI</small>
+          <strong>Assistant</strong>
+        </div>
+        <div class="chat-head-actions">
+          <button id="chatResetBtn" class="ghost-btn" type="button">New</button>
+          <button id="chatCloseBtn" class="icon-btn" type="button" title="Close">Close</button>
+        </div>
+      </div>
+      <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+      <form id="chatForm" class="chat-form">
+        <input id="chatInput" type="text" autocomplete="off" placeholder="Ask anything">
+        <button id="chatSendBtn" class="primary-btn" type="submit">Send</button>
+      </form>
+    </section>
+  </div>
+
+  <div id="busyOverlay" class="busy-overlay is-hidden" aria-live="polite">
+    <span class="loading-spinner"></span>
+    <span>
+      <strong id="busyTitle">Working</strong>
+      <small id="busyMessage">Please wait</small>
+    </span>
+  </div>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
+  <script src="vendor/hls.min.js"></script>
+  <script src="vendor/mpegts.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

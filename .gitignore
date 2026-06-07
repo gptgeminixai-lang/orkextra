@@ -1,0 +1,18 @@
+# Secrets & local config — NEVER commit
+.env
+.env.local
+.env.*.local
+
+# Local data (account DB, caches)
+*.db
+*.db-shm
+*.db-wal
+data/
+.cache/
+
+# Dependencies / build
+node_modules/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db

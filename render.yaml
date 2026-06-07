@@ -1,0 +1,34 @@
+# Render Blueprint — deploys ORKXTRA as a Node web service.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: orkxtra
+    runtime: node
+    plan: free
+    region: oregon                 # or: singapore / frankfurt — pick what's closest
+    buildCommand: "npm install"     # no dependencies, so this is instant
+    startCommand: "node web-player/server.js"
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      # REQUIRED: the app defaults to 127.0.0.1; a cloud host must bind all interfaces.
+      - key: HOST
+        value: "0.0.0.0"
+      # Node 22+ (needed for the built-in node:sqlite).
+      - key: NODE_VERSION
+        value: "22"
+      # Keep the SSRF guard on (blocks private/LAN targets). Public IPTV portals are fine.
+      - key: ALLOW_PRIVATE_REMOTE
+        value: "0"
+
+      # ---- Set these AFTER the first deploy, in the Render dashboard ----
+      # APP_URL  -> your live URL, e.g. https://orkxtra.onrender.com
+      #
+      # Stripe (optional, only for "Upgrade to Pro"). Add the SECRET values in the
+      # Render dashboard (Environment tab) so they never live in this committed file:
+      # - key: STRIPE_PRICE_ID
+      #   value: price_xxx
+      # - key: STRIPE_SECRET_KEY
+      #   sync: false
+      # - key: STRIPE_WEBHOOK_SECRET
+      #   sync: false

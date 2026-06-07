@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#05070b">
+  <meta name="description" content="ORKXTRA — Live TV, movies, and series from your own IPTV profiles.">
+  <title>ORKXTRA</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230b1019'/><circle cx='16' cy='16' r='8.6' fill='none' stroke='%23ff4d5e' stroke-width='4.4'/></svg>">
+  <link rel="preload" href="./fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="is-booting">
+  <section id="accountGate" class="account-gate is-hidden" aria-label="ORKXTRA account">
+    <header class="account-gate-head">
+      <img class="account-wordmark" src="./assets/orkxtra-wordmark.png" alt="ORKXTRA">
+      <button id="exploreDemoBtn" class="account-demo-link" type="button">Back to profiles</button>
+    </header>
+    <main class="account-gate-main">
+      <section class="account-intro">
+        <p class="account-kicker">Your premium IPTV home</p>
+        <h1>Stream your world.<br><span>Keep it beautifully simple.</span></h1>
+        <p class="account-copy">Bring your own IPTV login. ORKXTRA organizes live TV, movies, and series into one fast desktop-ready experience.</p>
+        <div class="account-value-grid">
+          <div><strong>Live</strong><span>Fast grouped channels</span></div>
+          <div><strong>VOD</strong><span>Movies and series</span></div>
+          <div><strong>Private</strong><span>Credentials stay local</span></div>
+        </div>
+      </section>
+      <section class="auth-card" aria-label="Account access">
+        <p class="auth-eyebrow">ORKXTRA account</p>
+        <h2 id="authTitle">Welcome back</h2>
+        <p id="authCopy">Log in to continue to your saved IPTV profiles.</p>
+        <div class="auth-tabs" role="tablist" aria-label="Account mode">
+          <button class="is-active" type="button" data-auth-mode="login">Log in</button>
+          <button type="button" data-auth-mode="signup">Sign up</button>
+        </div>
+        <form id="authForm">
+          <label id="authNameField" class="is-hidden">Name <input id="authName" autocomplete="name" placeholder="Your name"></label>
+          <label>Email <input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+          <label>Password <input id="authPassword" type="password" autocomplete="current-password" placeholder="At least 8 characters" required></label>
+          <div id="authBusy" class="inline-busy is-hidden"></div>
+          <button id="authSubmitBtn" class="auth-submit" type="submit">Log in</button>
+        </form>
+        <small class="auth-note">Your IPTV portal credentials remain inside this browser.</small>
+      </section>
+    </main>
+    <footer class="account-gate-foot">
+      <span>ORKXTRA</span>
+      <small>Free includes one saved IPTV profile. Pro unlocks multiple profiles.</small>
+    </footer>
+  </section>
+
+  <section id="profileGate" class="profile-gate is-hidden" aria-label="Choose IPTV profile">
+    <header class="profile-gate-head">
+      <a class="gate-brand" href="#profiles" aria-label="ORKXTRA profiles">
+        <img class="brand-wordmark" src="./assets/orkxtra-wordmark.png" alt="ORKXTRA">
+      </a>
+      <div class="gate-account-actions">
+        <button id="gateUpgradeBtn" class="gate-pro-btn" type="button">Upgrade to Pro</button>
+        <button id="gateAccountBtn" class="gate-account-btn" type="button">Account</button>
+      </div>
+    </header>
+    <main class="profile-gate-main">
+      <p class="gate-kicker">Profiles</p>
+      <h1>Who's watching?</h1>
+      <p id="profileGateSubtitle" class="gate-copy">Choose a saved IPTV login or add a new MAC, M3U, or Xtream profile.</p>
+      <div id="profileCards" class="profile-cards" aria-live="polite"></div>
+      <button id="manageProfilesBtn" class="gate-manage" type="button">Manage profiles</button>
+    </main>
+    <footer class="profile-gate-foot">
+      <span>ORKXTRA</span>
+      <small>Live TV, movies, and series from your own IPTV profiles</small>
+    </footer>
+  </section>
+
+  <div id="app" class="app is-hidden">
+    <header class="shell-header">
+      <a class="brand" href="#home" aria-label="ORKXTRA home">
+        <img class="brand-wordmark" src="./assets/orkxtra-wordmark.png" alt="ORKXTRA">
+      </a>
+      <nav class="main-nav" aria-label="Main">
+        <button class="nav-link is-active" data-route="home">Home</button>
+        <button class="nav-link" data-route="live">Live TV</button>
+        <button class="nav-link" data-route="movie">Movies</button>
+        <button class="nav-link" data-route="series">Series</button>
+        <button class="nav-link" data-route="favorites">My List</button>
+      </nav>
+      <form id="searchForm" class="search is-collapsed" role="search">
+        <button id="searchToggle" type="button" class="search-toggle" aria-label="Search" title="Search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+        </button>
+        <input id="searchInput" type="search" autocomplete="off" placeholder="Titles, channels, series">
+      </form>
+      <div class="account-zone">
+        <button id="accountBtn" class="account-pill" type="button" aria-haspopup="menu" aria-expanded="false">
+          <span class="account-dot" aria-hidden="true"></span>
+          <span id="accountPlanLabel">Free</span>
+        </button>
+        <div id="accountMenu" class="account-menu is-hidden" role="menu">
+          <div class="account-menu-head">
+            <small id="accountMenuKicker">ORKXTRA account</small>
+            <strong id="accountMenuName">Guest</strong>
+            <span id="accountMenuEmail">Demo access</span>
+          </div>
+          <div class="account-menu-plan">
+            <span id="accountMenuPlan">Free plan</span>
+            <small id="accountMenuSlots">1 saved profile</small>
+          </div>
+          <button id="accountMenuUpgrade" class="account-menu-primary" type="button">Upgrade to Pro</button>
+          <button id="accountMenuBilling" class="account-menu-action is-hidden" type="button">Manage billing</button>
+          <button id="accountMenuSettings" class="account-menu-action" type="button">Settings</button>
+          <button id="accountMenuLogout" class="account-menu-action" type="button">Log out</button>
+        </div>
+      </div>
+      <div class="profile-zone">
+        <button id="activeProfileBtn" class="profile-pill" type="button" aria-haspopup="menu" aria-expanded="false">
+          <span id="activeProfileAvatar" class="mini-avatar" aria-hidden="true"></span>
+          <span id="activeProfileName">Profile</span>
+          <span class="profile-caret" aria-hidden="true"></span>
+        </button>
+        <div id="profileMenu" class="profile-menu is-hidden" role="menu">
+          <div class="profile-menu-head">
+            <strong>Current profile</strong>
+            <small>Manage this IPTV login</small>
+          </div>
+          <div id="profileMenuList" class="profile-menu-list"></div>
+          <button id="profileMenuEdit" class="profile-menu-action" type="button">Edit profile</button>
+          <button id="profileMenuAdd" class="profile-menu-action" type="button">Add login</button>
+          <button id="profileMenuRefresh" class="profile-menu-action" type="button">Refresh profile</button>
+        </div>
+        <select id="profileSelect" class="sr-only" aria-label="Profile"></select>
+      </div>
+    </header>
+
+    <main>
+      <section class="watch-stage is-hidden" aria-label="Player">
+        <div class="player-card">
+          <video id="player" playsinline preload="auto"></video>
+          <div id="playerEmpty" class="player-empty">
+            <span class="play-mark">▶</span>
+            <strong>Select something to watch</strong>
+            <small>Live TV, movies, and series from your saved profiles</small>
+          </div>
+          <div class="player-scrim"></div>
+          <div class="player-info">
+            <small id="nowKind">Ready</small>
+            <strong id="nowTitle">ORKXTRA</strong>
+            <span id="nowMeta">No stream selected</span>
+          </div>
+          <div id="playerStatus" class="player-status">Ready</div>
+          <button id="closePlayerBtn" class="player-close control-icon" type="button" aria-label="Back" title="Back">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <button id="playerCloseX" class="player-closex control-icon" type="button" aria-label="Close player" title="Close player">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+            </svg>
+          </button>
+          <div class="player-controls">
+            <button id="playPauseBtn" class="round-btn is-primary control-icon" type="button" aria-label="Play" title="Play">
+              <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true">
+                <path class="icon-fill" d="M8 5.5v13l10-6.5z"></path>
+              </svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true">
+                <path class="icon-fill" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"></path>
+              </svg>
+            </button>
+            <button id="back10Btn" class="round-btn control-icon" type="button" aria-label="Rewind 10 seconds" title="Rewind 10 seconds">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+                <text class="seek-num" x="12" y="14.7" text-anchor="middle">10</text>
+              </svg>
+            </button>
+            <button id="fwd10Btn" class="round-btn control-icon" type="button" aria-label="Forward 10 seconds" title="Forward 10 seconds">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                <path d="M21 3v5h-5"></path>
+                <text class="seek-num" x="12" y="14.7" text-anchor="middle">10</text>
+              </svg>
+            </button>
+            <input id="seekRange" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek">
+            <button id="muteBtn" class="ghost-btn control-icon" type="button" aria-label="Mute" title="Mute">
+              <svg class="icon-volume" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 9v6h4l5 4V5L8 9z"></path>
+                <path d="M16 8.5a5 5 0 010 7"></path>
+                <path d="M18.5 6a8.5 8.5 0 010 12"></path>
+              </svg>
+              <svg class="icon-volume-x" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 9v6h4l5 4V5L8 9z"></path>
+                <path d="M18 9l4 4m0-4l-4 4"></path>
+              </svg>
+            </button>
+            <input id="volumeRange" class="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume">
+            <span id="playerBarTitle" class="player-bar-title"></span>
+            <button id="nextBtn" class="round-btn control-icon player-next" type="button" aria-label="Next" title="Next">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path class="icon-fill" d="M5 5.5v13l9-6.5z"></path>
+                <path class="icon-fill" d="M15.4 5.5h2.6v13h-2.6z"></path>
+              </svg>
+            </button>
+            <button id="subsBtn" class="ghost-btn control-icon" type="button" aria-label="Subtitles" title="Subtitles">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="13" rx="2.6"></rect>
+                <path d="M6.5 10.5h5M6.5 13.5h8"></path>
+              </svg>
+            </button>
+            <div class="speed-wrap">
+              <button id="speedBtn" class="ghost-btn control-icon" type="button" aria-label="Playback speed" title="Playback speed" aria-haspopup="true" aria-expanded="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4.5 16.5a7.5 7.5 0 1 1 15 0"></path>
+                  <path d="M12 14.6l4.2-3.5"></path>
+                  <circle cx="12" cy="14.7" r="1.5" class="icon-fill"></circle>
+                </svg>
+              </button>
+              <div id="speedMenu" class="speed-menu is-hidden" role="menu" aria-label="Playback speed">
+                <div class="speed-menu-title">Playback speed</div>
+                <div class="speed-menu-track">
+                  <button class="speed-opt" type="button" data-rate="0.5" role="menuitemradio"><span class="speed-dot"></span><span class="speed-lbl">0.5x</span></button>
+                  <button class="speed-opt" type="button" data-rate="0.75" role="menuitemradio"><span class="speed-dot"></span><span class="speed-lbl">0.75x</span></button>
+                  <button class="speed-opt" type="button" data-rate="1" role="menuitemradio"><span class="speed-dot"></span><span class="speed-lbl">1x (Normal)</span></button>
+                  <button class="speed-opt" type="button" data-rate="1.25" role="menuitemradio"><span class="speed-dot"></span><span class="speed-lbl">1.25x</span></button>
+                  <button class="speed-opt" type="button" data-rate="1.5" role="menuitemradio"><span class="speed-dot"></span><span class="speed-lbl">1.5x</span></button>
+                </div>
+              </div>
+            </div>
+            <button id="pipBtn" class="ghost-btn control-icon" type="button" aria-label="Picture in picture" title="Picture in picture">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                <rect x="13" y="11" width="6" height="5" rx="1"></rect>
+              </svg>
+            </button>
+            <button id="fullscreenBtn" class="ghost-btn control-icon" type="button" aria-label="Fullscreen" title="Fullscreen">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 4H4v4"></path>
+                <path d="M16 4h4v4"></path>
+                <path d="M20 16v4h-4"></path>
+                <path d="M8 20H4v-4"></path>
+              </svg>
+            </button>
+            <span id="playerTime" class="player-time" aria-label="Elapsed and total time">0:00 / 0:00</span>
+          </div>
+        </div>
+        <aside class="watch-details">
+          <div>
+            <small id="detailType">Featured</small>
+            <h1 id="detailTitle">A streaming home for your IPTV</h1>
+            <p id="detailDesc">Add a profile, browse by Live TV, Movies, or Series, then play directly from the catalog.</p>
+          </div>
+          <div class="detail-actions">
+            <button id="heroPlayBtn" class="primary-btn watch-action" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path class="icon-fill" d="M8 5.5v13l10-6.5z"></path>
+              </svg>
+              <span>Watch now</span>
+            </button>
+            <button id="favoriteBtn" class="ghost-btn save-action" type="button" aria-label="Save" title="Save">
+              <svg class="icon-plus" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+              <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12.5l4.2 4.2L19 7"></path>
+              </svg>
+            </button>
+          </div>
+          <section id="epgPanel" class="epg-panel" data-state="empty" aria-label="Program guide">
+            <div class="epg-head">
+              <small>EPG</small>
+              <span id="epgNowMeta">No guide loaded</span>
+            </div>
+            <strong id="epgNowTitle">Program guide unavailable</strong>
+            <div class="epg-progress" aria-hidden="true"><span id="epgProgress"></span></div>
+            <div id="epgNextList" class="epg-next"></div>
+          </section>
+          <dl class="stats">
+            <div><dt>Live</dt><dd id="statLive">0</dd></div>
+            <div><dt>Movies</dt><dd id="statMovies">0</dd></div>
+            <div><dt>Series</dt><dd id="statSeries">0</dd></div>
+          </dl>
+        </aside>
+      </section>
+
+      <section id="homeHero" class="home-hero is-hidden" aria-label="Featured" aria-roledescription="carousel">
+        <div id="heroTrack" class="hero-track"></div>
+        <button id="heroPrev" class="hero-nav hero-prev" type="button" aria-label="Previous featured title">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+        </button>
+        <button id="heroNext" class="hero-nav hero-next" type="button" aria-label="Next featured title">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </button>
+        <button id="heroPause" class="hero-pausebtn" type="button" aria-label="Pause auto-rotation" aria-pressed="false">
+          <svg class="ico-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"></path></svg>
+          <svg class="ico-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5z"></path></svg>
+        </button>
+        <div id="heroDots" class="hero-dots" aria-label="Featured titles"></div>
+      </section>
+
+      <section id="homeView" class="home-view" aria-label="Home rows"></section>
+
+      <section class="catalog-shell" aria-label="Catalog">
+        <aside class="group-sidebar">
+          <div class="sidebar-head">
+            <small>Browse</small>
+            <strong id="browseTitle">Home</strong>
+          </div>
+          <div id="groupList" class="group-list"></div>
+        </aside>
+        <section class="catalog-panel">
+          <div class="catalog-head">
+            <div>
+              <small id="catalogKicker">Featured</small>
+              <h2 id="catalogTitle">Recommended</h2>
+              <span id="catalogMeta">Ready</span>
+            </div>
+            <div class="catalog-head-actions">
+              <button id="seriesBackBtn" class="series-back is-hidden" type="button" aria-label="Back to series" title="Back to series">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+                <span>Series</span>
+              </button>
+              <div id="loadPill" class="load-pill is-hidden" aria-live="polite"></div>
+            </div>
+          </div>
+          <div id="catalogGrid" class="poster-grid"></div>
+        </section>
+      </section>
+    </main>
+
+    <nav class="mobile-tabbar" aria-label="Sections">
+      <button class="nav-link tab-link" data-route="home" aria-label="Home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7M6 10v9h12v-9"></path></svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-link tab-link" data-route="live" aria-label="Live TV">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 3l4 4 4-4"></path></svg>
+        <span>Live</span>
+      </button>
+      <button class="nav-link tab-link" data-route="movie" aria-label="Movies">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M3 9h18M8 4v5M16 4v5"></path></svg>
+        <span>Movies</span>
+      </button>
+      <button class="nav-link tab-link" data-route="series" aria-label="Series">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M7 19v2M17 19v2"></path></svg>
+        <span>Series</span>
+      </button>
+      <button class="nav-link tab-link" data-route="favorites" aria-label="My List">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20l-1.3-1.2C6 14.6 3 11.9 3 8.5 3 6 5 4 7.5 4c1.4 0 2.8.7 3.5 1.8C11.7 4.7 13.1 4 14.5 4 17 4 19 6 19 8.5c0 3.4-3 6.1-7.7 10.3L12 20z"></path></svg>
+        <span>My List</span>
+      </button>
+    </nav>
+  </div>
+
+  <dialog id="profileDialog" class="modal">
+    <form id="profileForm" method="dialog">
+      <div class="modal-head">
+        <div>
+          <small>Profile</small>
+          <h2 id="profileDialogTitle">Add IPTV Login</h2>
+        </div>
+        <button class="ghost-btn" value="cancel" formnovalidate>Close</button>
+      </div>
+      <div class="login-tabs" role="tablist" aria-label="Login type">
+        <button class="is-active" type="button" data-login-type="mac">MAC</button>
+        <button type="button" data-login-type="m3u">M3U</button>
+        <button type="button" data-login-type="xtream">Xtream</button>
+      </div>
+      <label>Name <input id="profileName" placeholder="My IPTV"></label>
+      <div class="login-fields" data-fields="mac">
+        <label>Portal URL <input id="macPortal" type="url" placeholder="http://IP:PORT/c/"></label>
+        <label>MAC Address <input id="macValue" placeholder="00:1A:79:XX:XX:XX"></label>
+      </div>
+      <div class="login-fields is-hidden" data-fields="m3u">
+        <label>M3U URL <input id="m3uUrl" type="url" placeholder="https://example.com/list.m3u"></label>
+      </div>
+      <div class="login-fields is-hidden" data-fields="xtream">
+        <label>Server <input id="xtreamServer" type="url" placeholder="http://provider.com:8080"></label>
+        <label>Username <input id="xtreamUser" autocomplete="username"></label>
+        <label>Password <input id="xtreamPass" type="password" autocomplete="current-password"></label>
+      </div>
+      <div id="profileBusy" class="inline-busy is-hidden"></div>
+      <menu class="modal-actions">
+        <button class="ghost-btn" value="cancel" formnovalidate>Cancel</button>
+        <button id="saveProfileBtn" class="primary-btn" value="default">Add Profile</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="settingsDialog" class="modal">
+    <form method="dialog">
+      <div class="modal-head">
+        <div><small>ORKXTRA</small><h2>Settings</h2></div>
+        <button class="ghost-btn" value="cancel" formnovalidate>Close</button>
+      </div>
+      <div class="settings-group">
+        <h3>Parental controls</h3>
+        <label class="settings-row">
+          <span>Lock adult content with a PIN</span>
+          <input id="setLockAdult" type="checkbox">
+        </label>
+        <label class="settings-row">
+          <span>PIN (4–8 digits)</span>
+          <input id="setParentalPin" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="••••">
+        </label>
+        <small class="settings-hint">Adult-flagged channels will require this PIN before playing.</small>
+      </div>
+      <div class="settings-group">
+        <h3>Playback</h3>
+        <label class="settings-row">
+          <span>Default aspect ratio</span>
+          <select id="setAspect">
+            <option value="contain">Fit (no crop)</option>
+            <option value="cover">Fill (crop edges)</option>
+            <option value="fill">Stretch to frame</option>
+          </select>
+        </label>
+        <small class="settings-hint">In the player: <kbd>Space</kbd> play/pause · <kbd>F</kbd> fullscreen · <kbd>M</kbd> mute · <kbd>Z</kbd> aspect · <kbd>←/→</kbd> seek · <kbd>↑/↓</kbd> volume · <kbd>N</kbd> next · <kbd>/</kbd> search.</small>
+      </div>
+      <div class="settings-group">
+        <h3>Backup</h3>
+        <div class="settings-actions">
+          <button id="exportDataBtn" class="ghost-btn" type="button">Export profiles &amp; settings</button>
+          <button id="importDataBtn" class="ghost-btn" type="button">Import backup</button>
+          <input id="importDataInput" type="file" accept="application/json,.json" class="sr-only">
+        </div>
+        <small class="settings-hint">Saves IPTV profiles, favorites, history and settings to a JSON file you can restore on any device.</small>
+      </div>
+      <menu class="modal-actions">
+        <button class="ghost-btn" value="cancel" formnovalidate>Close</button>
+        <button id="saveSettingsBtn" class="primary-btn" value="save">Save settings</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="pinDialog" class="modal pin-modal">
+    <form id="pinForm" method="dialog">
+      <div class="modal-head">
+        <div><small>Parental lock</small><h2 id="pinDialogTitle">Enter PIN</h2></div>
+        <button class="ghost-btn" value="cancel" formnovalidate>Cancel</button>
+      </div>
+      <label>PIN <input id="pinInput" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="••••"></label>
+      <p id="pinError" class="pin-error is-hidden">Incorrect PIN. Try again.</p>
+      <menu class="modal-actions">
+        <button class="ghost-btn" value="cancel" formnovalidate>Cancel</button>
+        <button class="primary-btn" value="ok">Unlock</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="proDialog" class="modal pro-modal">
+    <div class="pro-modal-shell">
+      <div class="pro-modal-head">
+        <div>
+          <small>ORKXTRA PRO</small>
+          <h2>One player. Every profile.</h2>
+          <p id="proDialogCopy">Upgrade when one IPTV login is not enough.</p>
+        </div>
+        <button class="ghost-btn" type="button" data-close-pro aria-label="Close upgrade">Close</button>
+      </div>
+      <div class="pro-plan-grid">
+        <article class="plan-card">
+          <span>Free</span>
+          <strong>1</strong>
+          <p>saved IPTV profile</p>
+        </article>
+        <article class="plan-card is-pro">
+          <span>Pro</span>
+          <strong>25</strong>
+          <p>saved IPTV profiles</p>
+        </article>
+      </div>
+      <div class="pro-benefits">
+        <span>Multiple MAC, M3U, and Xtream logins</span>
+        <span>Switch profiles without replacing your saved setup</span>
+        <span>Billing managed securely through Stripe</span>
+      </div>
+      <button id="startCheckoutBtn" class="pro-checkout" type="button">Continue with Stripe</button>
+      <small id="proBillingNote">Secure subscription checkout powered by Stripe.</small>
+    </div>
+  </dialog>
+
+  <div id="titleModal" class="tmodal is-hidden" role="dialog" aria-modal="true" aria-label="Title details">
+    <div class="tmodal-scrim" data-close-modal></div>
+    <div class="tmodal-card" role="document">
+      <button class="tmodal-close" type="button" data-close-modal aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path></svg>
+      </button>
+      <div class="tmodal-hero">
+        <div class="tmodal-art" id="tmodalArt"></div>
+        <div class="tmodal-herofade"></div>
+        <div class="tmodal-heroinfo">
+          <h2 class="tmodal-title" id="tmodalTitle"></h2>
+          <div class="tmodal-actions">
+            <button class="tmodal-play" type="button" id="tmodalPlay">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-fill" d="M8 5.5v13l10-6.5z"></path></svg>
+              <span>Play</span>
+            </button>
+            <button class="tmodal-round" type="button" id="tmodalAdd" aria-label="Add to My List" title="My List">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="ic-add"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="ic-saved"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="tmodal-body">
+        <div class="tmodal-main">
+          <div class="tmodal-metarow">
+            <span id="tmodalYear" class="tmodal-year"></span>
+            <span id="tmodalType"></span>
+            <span class="tmodal-hd" id="tmodalHd">HD</span>
+          </div>
+          <p class="tmodal-synopsis" id="tmodalSynopsis"></p>
+        </div>
+        <aside class="tmodal-side" id="tmodalSide"></aside>
+      </div>
+      <section class="tmodal-episodes is-hidden" id="tmodalEpisodes">
+        <div class="tmodal-ephead"><h3>Episodes</h3><span id="tmodalEpCount"></span></div>
+        <div class="tmodal-eplist" id="tmodalEpList"></div>
+      </section>
+    </div>
+  </div>
+
+  <div id="busyOverlay" class="busy-overlay is-hidden" aria-live="polite"></div>
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
+  <script src="../web-player/vendor/hls.min.js"></script>
+  <script src="../web-player/vendor/mpegts.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

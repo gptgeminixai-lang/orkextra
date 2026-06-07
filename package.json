@@ -1,0 +1,14 @@
+{
+  "name": "orkxtra",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ORKXTRA — Netflix-style IPTV/OTT web player (Live TV, Movies, Series) for MAC/Stalker, Xtream and M3U portals. Zero npm dependencies; runs on Node's built-ins.",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node web-player/server.js"
+  }
+}
