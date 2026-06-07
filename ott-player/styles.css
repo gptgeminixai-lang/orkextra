@@ -572,16 +572,14 @@ select:focus-visible {
 
 .profile-gate h1 {
   margin: 0;
-  font-size: clamp(2.7rem, 6vw, 5.8rem);
-  line-height: .95;
+  font-size: clamp(2rem, 3.6vw, 3.3rem);
+  line-height: 1.1;
+  font-weight: 500;
   letter-spacing: 0;
 }
 
 .gate-copy {
-  max-width: 680px;
-  margin: 0;
-  color: #aeb9ca;
-  font-size: 1.02rem;
+  display: none;
 }
 
 .profile-cards {
@@ -630,13 +628,13 @@ select:focus-visible {
 }
 
 .viewer-avatar {
-  width: clamp(128px, 13vw, 168px);
+  width: clamp(120px, 11vw, 150px);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
-  border-radius: clamp(18px, 2.2vw, 26px);
+  border-radius: 10px;
   background:
-    linear-gradient(160deg, rgba(255, 255, 255, .18), transparent 44%),
+    linear-gradient(160deg, rgba(255, 255, 255, .12), transparent 46%),
     linear-gradient(145deg, var(--avatar-a), var(--avatar-b));
   color: #fff;
   font-size: clamp(2.6rem, 5vw, 3.6rem);
@@ -659,7 +657,7 @@ select:focus-visible {
 }
 
 .viewer-card.is-current .viewer-avatar {
-  outline-color: var(--blue-2);
+  outline-color: transparent;
 }
 
 .add-avatar {
@@ -740,14 +738,7 @@ select:focus-visible {
 }
 
 .profile-gate-foot {
-  justify-content: center;
-  gap: 12px;
-  color: #78869a;
-}
-
-.profile-gate-foot span {
-  color: #f6f8ff;
-  font-weight: 950;
+  display: none;
 }
 
 .app {
