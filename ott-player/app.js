@@ -3322,8 +3322,19 @@
     return { url: data.url, format: channel.streamFormat };
   }
 
+  // An http:// stream on an https:// page is blocked by the browser (mixed content).
+  // Relay it through our own same-origin /proxy so the browser only ever sees https.
+  function proxiedStreamUrl(streamUrl) {
+    if (!streamUrl || typeof streamUrl !== "string") return streamUrl;
+    if (location.protocol === "https:" && /^http:\/\//i.test(streamUrl)) {
+      return `${location.origin}/proxy?url=${encodeURIComponent(streamUrl)}`;
+    }
+    return streamUrl;
+  }
+
   function setupSource(url, format = "") {
     const mediaFormat = format || inferStreamFormat(url);
+    url = proxiedStreamUrl(url);
     if (mediaFormat === "hls" && window.Hls && Hls.isSupported()) {
       hls = new Hls(stableHlsConfig());
       hls.loadSource(url);

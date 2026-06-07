@@ -1273,7 +1273,7 @@ async function proxyStream(url, req, res) {
       if (res.destroyed || controller.signal.aborted) return;
       return sendJson(res, { error: `Playlist proxy failed: ${error.message}` }, 502);
     }
-    const rewritten = rewritePlaylist(text, target, `http://${req.headers.host || `${host}:${port}`}`);
+    const rewritten = rewritePlaylist(text, target, requestOrigin(req));
     res.writeHead(response.status, {
       ...corsHeaders(req),
       "Access-Control-Allow-Headers": "Range, Content-Type",
